@@ -82,6 +82,7 @@ function calculateYearlyInterestChart(principal, annualPayment, rate, years, fv,
         }
         const principalYear = totalPrincipal + annualPayment;
         const interestYear = principalYear * (rate / 100); // Simple Interest
+        const interestForThisYearAddOn = annualPayment * (rate / 100); // Simple Interest // TODO: update naming convention
 
         const yearlyContribution = annualPayment + interestYear;
 
@@ -89,34 +90,30 @@ function calculateYearlyInterestChart(principal, annualPayment, rate, years, fv,
         totalInterest += interestYear;
         totalRecursivePayments += annualPayment;
 
-        let contributionInFV = annualPayment * Math.pow((1 + rate / 100), 1 * ((years - year) + 1)); // By Compound Interest
+        let contributionInFV = annualPayment * Math.pow((1 + rate / 100), 1 * ((years - year) + 1)); // By Compound Interest // A = P * (1+(r/n))^nt // calc P, Interest
+        let contributionOfPrincipleInFV = annualPayment;
+        let contributionOfInterestInFV = annualPayment>0?contributionInFV-annualPayment:0;
         let simpleInterestRate = (contributionInFV - annualPayment) / (annualPayment * ((years - year) + 1)); // Simple Interest Rate // A = P (1 + R * T) = P + PRT // R = (A-P)/(P*T)
 
         tableData.push({
             Year: year,
+            "Recursive Principle": annualPayment.toFixed(2), // // principle added this year externally
             "Cumulative Principle": principalYear.toFixed(2), // // Overall principal that will be used in current year interest calculation
             "Annual Compounded ROI (%)": rate.toFixed(2),
+            "Interest on Recursive Principle": interestForThisYearAddOn.toFixed(2), // // interest earned this year on the principle added externally
             "Cumulative Interest": interestYear.toFixed(2),
-            "Yearly Contribution": yearlyContribution.toFixed(2),
-            "Total Annual Payments": totalRecursivePayments.toFixed(2),
-            "Total Interest": totalInterest.toFixed(2),
-            "Contribution in FV (Value)": contributionInFV.toFixed(2), // // Contribution of current payment in overall FV 
-            "Contribution in FV (%)": ((contributionInFV / fv) * 100).toFixed(7),
+            "Yearly Contribution Amount": yearlyContribution.toFixed(2),
+            "Accumulated Annual Principle Payments since Inception": totalRecursivePayments.toFixed(2),
+            "Total Interest Earned (Including Compounding) since Inception": totalInterest.toFixed(2),
+            "Contribution of Yearly Contribution Amount in total FV (Value)": contributionInFV.toFixed(2), // // Contribution of current payment in overall FV 
+            "Contribution of Yearly Contribution Amount in total FV (%)": ((contributionInFV / fv) * 100).toFixed(7),
+            "Contribution of Yearly Contributed Principle in total FV (Value)": contributionOfPrincipleInFV.toFixed(2), // // Contribution of current payment in overall FV 
+            "Contribution of Yearly Contributed Principle in total FV (%)": ((contributionOfPrincipleInFV / fv) * 100).toFixed(7),
+            "Contribution of Yearly Contributed Interest in total FV (Value)": contributionOfInterestInFV.toFixed(2), // // Contribution of current payment in overall FV 
+            "Contribution of Yearly Contributed Interest in total FV (%)": ((contributionOfInterestInFV / fv) * 100).toFixed(7),
             "Annual simpleInterest ROI (%)": (simpleInterestRate * 100).toFixed(7),
         });
         // // TODO: add few more fields in table
-        // Year: year,
-        // "Recursive Principle": principalYear.toFixed(2), // // Overall principal that will be used in current year interest calculation
-        // "Cumulative Principle": principalYear.toFixed(2), // // Overall principal that will be used in current year interest calculation
-        // "Annual Compounded ROI (%)": rate.toFixed(2),
-        // "Interest on Recursive Principle": interestYear.toFixed(2),
-        // "Cumulative Interest": interestYear.toFixed(2),
-        // "Yearly Contribution Amount": yearlyContribution.toFixed(2),
-        // "Accumulated Annual Principle Payments since inception": ,
-        // "Total Interest": totalInterest.toFixed(2),
-        // "Contribution in FV (Value)": contributionInFV.toFixed(2), // // Contribution of current payment in overall FV 
-        // "Contribution in FV (%)": ((contributionInFV / fv) * 100).toFixed(7),
-        // "Annual simpleInterest ROI (%)": (simpleInterestRate * 100).toFixed(7),
 
     }
 
@@ -151,7 +148,7 @@ function main() {
     const principal = 0; // Initial investment (assuming you start from scratch)
     const fv = 2_00_00_000; // Desired future lump sum
     const nper = 61; // Number of years for maturity
-    const annualPayment = 51_479 // 22_969; // 61 Yr // 28_722; // 36 Yr // 51_479; // 15 Yr // 58_554; // 10 Yr // 1_05_008; // 5 Yr // 6_94_123; // 1 Yr // Annual payment // Recursive Payment
+    const annualPayment = 28_722 // 22_969; // 61 Yr // 28_722; // 36 Yr // 51_479; // 15 Yr // 58_554; // 10 Yr // 1_05_008; // 5 Yr // 6_94_123; // 1 Yr // Annual payment // Recursive Payment
     const number_of_years_recursive_payment_made = 36; // TODO: Replace with array of payments, to make this script more generic for lot other , length of this array == nper
 
     // Calculate the compound interest rate
@@ -184,7 +181,7 @@ function main() {
     // VERIFY TABLE: fv == SUM(tableData["Contribution in FV (Value)"])
     let total_sum = 0;
     tableData.map((element) => {
-        total_sum += parseFloat(element["Contribution in FV (Value)"]);
+        total_sum += parseFloat(element["Contribution of Yearly Contribution Amount in total FV (Value)"]);
     })
     console.log("🚀 ~ file: index.js:140 ~ tableData.map ~ total_sum:", total_sum, "verification status: ", total_sum == fv || (total_sum - fv >= -1 && total_sum - fv < 1)); // TODO: 73_658_514.49->20000000.00999999 do verification by summation of contribution of yearly contribution amount in Total FV == FV
 
