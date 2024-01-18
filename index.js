@@ -148,8 +148,8 @@ function main() {
     const principal = 0; // Initial investment (assuming you start from scratch)
     const fv = 2_00_00_000; // Desired future lump sum
     const nper = 61; // Number of years for maturity
-    const annualPayment = 28_722 // 22_969; // 61 Yr // 28_722; // 36 Yr // 51_479; // 15 Yr // 58_554; // 10 Yr // 1_05_008; // 5 Yr // 6_94_123; // 1 Yr // Annual payment // Recursive Payment
-    const number_of_years_recursive_payment_made = 36; // TODO: Replace with array of payments, to make this script more generic for lot other , length of this array == nper
+    const annualPayment = 22_969 // 22_969; // 61 Yr // 28_722; // 36 Yr // 51_479; // 15 Yr // 58_554; // 10 Yr // 1_05_008; // 5 Yr // 6_94_123; // 1 Yr // Annual payment // Recursive Payment
+    const number_of_years_recursive_payment_made = 61; // TODO: Replace with array of payments, to make this script more generic for lot other , length of this array == nper
 
     // Calculate the compound interest rate
     const compoundInterestRate = calculateCompoundInterestRate(
@@ -175,7 +175,7 @@ function main() {
         fv,
         number_of_years_recursive_payment_made
     );
-    console.table(tableData);
+    console.table(tableData, ['Contribution of Yearly Contribution Amount in total FV (Value)', 'Contribution of Yearly Contribution Amount in total FV (%)', 'Contribution of Yearly Contributed Principle in total FV (Value)','Contribution of Yearly Contributed Interest in total FV (Value)']);
     // console.log(tableData);
 
     // VERIFY TABLE: fv == SUM(tableData["Contribution in FV (Value)"])
